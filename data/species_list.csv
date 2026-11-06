@@ -1,0 +1,20 @@
+species_id,common_name,scientific_name,group,alert
+atlantic_cod,Atlantic cod,Gadus morhua,native,no
+pollock,Pollock,Pollachius virens,native,no
+cunner,Cunner,Tautogolabrus adspersus,native,no
+winter_flounder,Winter flounder,Pseudopleuronectes americanus,native,no
+shorthorn_sculpin,Shorthorn sculpin,Myoxocephalus scorpius,native,no
+rock_gunnel,Rock gunnel,Pholis gunnellus,native,no
+threespine_stickleback,Threespine stickleback,Gasterosteus aculeatus,native,no
+atlantic_silverside,Atlantic silverside,Menidia menidia,native,no
+mummichog,Mummichog,Fundulus heteroclitus,native,no
+lumpfish,Lumpfish,Cyclopterus lumpus,native,no
+atlantic_mackerel,Atlantic mackerel,Scomber scombrus,native,no
+american_eel,American eel,Anguilla rostrata,native,no
+striped_bass,Striped bass,Morone saxatilis,native,no
+spotfin_butterflyfish,Spotfin butterflyfish,Chaetodon ocellatus,tropical_visitor,yes
+bluespotted_cornetfish,Bluespotted cornetfish,Fistularia tabacaria,tropical_visitor,yes
+grey_triggerfish,Grey triggerfish,Balistes capriscus,tropical_visitor,yes
+lined_seahorse,Lined seahorse,Hippocampus erectus,tropical_visitor,yes
+smallmouth_bass,Smallmouth bass,Micropterus dolomieu,invasive_freshwater,yes
+chain_pickerel,Chain pickerel,Esox niger,invasive_freshwater,yes

@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Videos, model weights and outputs are NOT committed (share videos on the team drive)
+data/clips/*
+!data/clips/.gitkeep
+models/*
+!models/.gitkeep
+outputs/*
+!outputs/.gitkeep
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.avi
+*.mkv
+*.pt
+*.pth
+*.onnx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
