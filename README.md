@@ -11,14 +11,52 @@ Built by Team JPSHG for RBC HubHacks 2026.
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+# Install FFmpeg first (see Synthetic sample playback below).
 python scripts\make_test_video.py                     # fake murky test clip -> data\clips\test_clip.mp4
 python -m tidesight.pipeline data\clips\test_clip.mp4  # runs triage -> detect -> species -> MaxN
 python scripts\validate_outputs.py outputs\test_clip   # checks outputs follow the contract
 streamlit run app.py                                  # review app at http://localhost:8501
 ```
 
-The test clip is MPEG-4 Part 2 and may not play in the browser; real GoPro clips (H.264) play fine.
-Everything else in the app works with the test clip.
+## Synthetic sample playback
+
+The generator requires **FFmpeg with the libx264 encoder**, an external local
+video tool. It does not install anything automatically or need model packages
+for conversion. Python dependencies and their pins are unchanged.
+
+On Windows, get the release essentials build from
+[Gyan's FFmpeg builds](https://www.gyan.dev/ffmpeg/builds/), extract it outside
+the repository, and add its `bin` directory to PATH. Open a new terminal and
+check `ffmpeg -version` and `ffmpeg -encoders | Select-String libx264`.
+Alternatively, pass the executable explicitly:
+
+```powershell
+python scripts\make_test_video.py --ffmpeg "C:\Tools\ffmpeg\bin\ffmpeg.exe"
+```
+
+Run `python scripts\make_test_video.py` again to replace an older sample. The
+script renders the same synthetic scene locally, then converts it to H.264 with
+`yuv420p` pixels and `faststart` MP4 metadata for browser loading/seeking. It keeps
+`data/clips/test_clip.mp4`, 640×360, 25 fps and 375 frames (15 seconds). Temporary
+files are removed; a missing tool or failed conversion exits with guidance and
+preserves the previous sample. If FFmpeg is missing, fix PATH or use `--ffmpeg`;
+if `libx264` is unavailable, use the essentials build. Close programs locking the
+file if replacement fails, then retry. No videos are uploaded.
+
+The extra conversion takes time and uses a second lossy encoding pass, acceptable
+for this disposable synthetic fixture. The old MP4V encoding could be decoded by
+OpenCV but failed in browsers; `.mp4` names the container, not its video codec.
+[Streamlit documents this MP4V limitation and recommends H.264](https://docs.streamlit.io/develop/api-reference/media/st.video).
+
+Start the app, select `test_clip.mp4`, run analysis if no results exist, and refresh
+the browser after regenerating. Press Play, confirm motion and a 15-second duration,
+then seek forward and backward using the player timeline. A passing pipeline or
+codec check alone does not prove playback. This clip and current placeholder
+analysis are synthetic; they establish no real detection or species accuracy.
+
+The real-encoding regression test runs when FFmpeg is on PATH or
+`TIDESIGHT_TEST_FFMPEG` points to its executable; otherwise that test is explicitly
+skipped. The other sample failure tests need no FFmpeg installation.
 
 ## How it fits together
 

@@ -77,6 +77,9 @@ def track_thumbnail(video: str, frame: int, bbox: tuple[int, int, int, int]):
 # ------------------------------------------------------------------ overview
 left, right = st.columns([3, 2])
 with left:
+    if clip_path.name == "test_clip.mp4":
+        st.caption("Synthetic test clip — not real survey footage. Sample analysis does not "
+                   "demonstrate detection or species accuracy.")
     st.video(str(clip_path))
     st.subheader("Busy segments (from triage)")
     st.dataframe(segments, width="stretch")

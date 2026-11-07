@@ -5,10 +5,16 @@ Make a short fake "murky water" video so everyone can test the pipeline before r
 
 Writes data/clips/test_clip.mp4 (15 s, 640x360, 25 fps): greenish murky background, drifting
 particles, swaying grass, and two dark fish-like shapes. Not realistic - just for testing.
+Requires local FFmpeg with libx264 on PATH, or --ffmpeg path/to/ffmpeg.exe.
+See README.md for setup. No models or network access are used.
 """
 from __future__ import annotations
 
+import argparse
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import cv2
@@ -20,9 +26,8 @@ from tidesight import config  # noqa: E402
 W, H, FPS, SECONDS = 640, 360, 25, 15
 
 
-def main() -> None:
-    config.CLIPS_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = config.CLIPS_DIR / "test_clip.mp4"
+def render_scene(out_path: Path) -> None:
+    """Render the original synthetic scene into an intermediate MP4V file."""
     writer = cv2.VideoWriter(str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (W, H))
     if not writer.isOpened():
         raise SystemExit("Could not open a video writer (is opencv-python installed?)")
@@ -56,7 +61,42 @@ def main() -> None:
 
         writer.write(cv2.GaussianBlur(frame, (5, 5), 0))
     writer.release()
-    print(f"Wrote {out_path}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ffmpeg", default="ffmpeg", help="FFmpeg executable (default: PATH)")
+    args = parser.parse_args()
+    ffmpeg = shutil.which(args.ffmpeg)
+    if not ffmpeg:
+        raise SystemExit("FFmpeg not found. Install FFmpeg with libx264 (see README.md), "
+                         "then add its bin folder to PATH or use --ffmpeg path/to/ffmpeg.exe. "
+                         "Existing test_clip.mp4 was not changed.")
+
+    config.CLIPS_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = config.CLIPS_DIR / "test_clip.mp4"
+    try:
+        # Same filesystem for final replacement; failed encoding leaves the old sample intact.
+        with tempfile.TemporaryDirectory(prefix=".test_clip-", dir=config.CLIPS_DIR) as staging:
+            source = Path(staging) / "source.mp4"
+            encoded = Path(staging) / "browser.mp4"
+            render_scene(source)
+            subprocess.run(
+                [ffmpeg, "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
+                 "-i", str(source), "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                 "-crf", "18", "-movflags", "+faststart", str(encoded)],
+                check=True, capture_output=True, text=True, encoding="utf-8", errors="replace",
+            )
+            encoded.replace(out_path)
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(f"FFmpeg conversion failed: {exc.stderr}\n"
+                         "Use a build with libx264; see README.md and retry. "
+                         "Existing test_clip.mp4 was not changed.") from exc
+    except OSError as exc:
+        raise SystemExit(f"Could not generate the sample: {exc}. Check the FFmpeg path "
+                         "and file permissions, close any program locking the clip, then retry. "
+                         "Existing test_clip.mp4 was not changed.") from exc
+    print(f"Wrote synthetic H.264 sample: {out_path} (not real survey footage)")
 
 
 if __name__ == "__main__":
