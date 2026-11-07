@@ -16,7 +16,7 @@ import cv2
 import streamlit as st
 
 from tidesight import config
-from tidesight.contracts import (clip_id_from_path, load_species_list, read_jsonl,
+from tidesight.contracts import (ContractError, clip_id_from_path, load_species_list, read_jsonl,
                                  read_maxn_csv, read_segments, set_track_species)
 from tidesight.enhance import enhance
 from tidesight.pipeline import run_pipeline, save_review
@@ -35,9 +35,18 @@ clip_path: Path = st.sidebar.selectbox("Video", clips, format_func=lambda p: p.n
 clip_id = clip_id_from_path(clip_path)
 out_dir = config.OUTPUTS_DIR / clip_id
 
+# A new form generation discards unsaved choices after switching clips, analysing,
+# or successfully saving. Previously saved review status comes from the records.
+if st.session_state.get("review_clip") != clip_id:
+    st.session_state.review_clip = clip_id
+    st.session_state.review_generation = st.session_state.get("review_generation", 0) + 1
+    st.session_state.pop("review_saved", None)
+
 if st.sidebar.button("Run analysis", type="primary"):
     with st.spinner("Analysing video..."):
         result = run_pipeline(clip_path)
+    st.session_state.review_generation += 1
+    st.session_state.pop("review_saved", None)
     st.sidebar.success(f"Done: {result['n_tracks']} tracks, {result['skipped_pct']}% of video skipped")
 
 det_path = out_dir / config.DETECTIONS_FILE
@@ -87,6 +96,11 @@ with right:
 
 # ------------------------------------------------------------------ review
 st.subheader("Review each fish")
+if st.session_state.pop("review_saved", None) == clip_id:
+    st.success("Saved. MaxN recalculated.")
+st.caption("Only checked tracks will be saved. Check a track to confirm its current species or a correction. "
+           "Original model scores and suggestions are retained as evidence; they are not confidence "
+           "in a human correction.")
 options = list(species_list) + [config.UNKNOWN_LABEL]
 labels = {sid: row["common_name"] for sid, row in species_list.items()}
 labels[config.UNKNOWN_LABEL] = "Unknown (expert review)"
@@ -97,22 +111,38 @@ for rec in records:
     if best is None or rec["det_conf"] > best["det_conf"]:
         tracks[rec["track_id"]] = rec
 
-with st.form("review"):
+form_key = f"review_{clip_id}_{st.session_state.review_generation}"
+with st.form(form_key):
     choices: dict[int, str] = {}
+    confirmed: dict[int, bool] = {}
     for track_id, rec in sorted(tracks.items()):
         c1, c2, c3 = st.columns([1, 2, 2])
         thumb = track_thumbnail(str(clip_path), rec["frame"], tuple(rec["bbox"]))
         if thumb is not None:
             c1.image(thumb, caption=f"Track {track_id} at {rec['time_s']} s")
         suggestions = ", ".join(f"{labels.get(t['species'], t['species'])} {t['score']:.2f}" for t in rec["top3"])
-        c2.markdown(f"**Track {track_id}**  \nSuggestions: {suggestions or '-'}  \n"
+        c2.markdown(f"**Track {track_id}**  \nOriginal model score: {rec['species_conf']:.2f}  \n"
+                    f"Original model suggestions: {suggestions or '-'}  \n"
                     f"Reviewed: {'yes' if rec['reviewed'] else 'no'}")
         current = rec["species"] if rec["species"] in options else config.UNKNOWN_LABEL
         choices[track_id] = c3.selectbox("Species", options, index=options.index(current),
-                                         format_func=lambda s: labels.get(s, s), key=f"track_{track_id}")
+                                         format_func=lambda s: labels.get(s, s), key=f"{form_key}_species_{track_id}")
+        confirmed[track_id] = c3.checkbox("Confirm this track", key=f"{form_key}_confirm_{track_id}")
     if st.form_submit_button("Save review"):
-        for track_id, species in choices.items():
-            set_track_species(records, track_id, species, 1.0, reviewed=True)
-        save_review(clip_id, records)
-        st.success("Saved. MaxN recalculated.")
-        st.rerun()
+        if not any(confirmed.values()):
+            st.info("Check at least one track to confirm before saving. No changes saved.")
+        else:
+            for track_id, species in choices.items():
+                if confirmed[track_id]:
+                    # The model score is consistent per track under the contract.
+                    # Keep it and top3 as model evidence, even after a correction.
+                    set_track_species(records, track_id, species,
+                                      tracks[track_id]["species_conf"], reviewed=True)
+            try:
+                save_review(clip_id, records)
+            except (ContractError, OSError) as exc:
+                st.error(f"Review could not be saved: {exc}")
+            else:
+                st.session_state.review_saved = clip_id
+                st.session_state.review_generation += 1
+                st.rerun()
