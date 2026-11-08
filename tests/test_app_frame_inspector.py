@@ -45,7 +45,7 @@ def test_sparse_saved_frame_selection_and_box_label_join(inspector, tmp_path):
     groups = inspector["inspector_frames"](rows)
     assert list(groups) == [5, 15]
     assert [r["track_id"] for r in groups[15]] == [2, 9]
-    assert inspector["inspector_frame_label"](15, groups[15]) == "Original frame 15 — 0.600 s"
+    assert inspector["inspector_frame_label"](15, groups[15]) == "Frame 15 (0.600 s)"
     evidence = inspector["inspector_evidence"](groups[15], {"pollock": {"common_name": "Pollock"}})
     assert evidence == [
         {"Track": 2, "Saved species decision": "Pollock", "Review status": "Reviewed",
@@ -139,7 +139,7 @@ def test_actual_app_selection_and_saved_correction_refresh(review_app):
     app, outputs, _ = review_app
     selector = next((s for s in app.selectbox if s.label == "Saved frame"), None)
     assert selector is not None
-    assert selector.options == ["Original frame 0 — 0.000 s", "Original frame 5 — 0.200 s"]
+    assert selector.options == ["Frame 0 (0.000 s)", "Frame 5 (0.200 s)"]
     selector.select(5).run()
     species_widgets(app)[0].select("unknown")
     app.checkbox[0].check()
