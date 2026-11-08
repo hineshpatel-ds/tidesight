@@ -55,7 +55,7 @@ Resizing is internal: return bounding boxes mapped back to original-resolution
 integer pixels, retaining original frame numbers and timestamps. Never pass
 detector-preprocessed frames to the species model or overwrite the source video.
 
-### Protocol sampling (ML interface; app integration pending)
+### Protocol sampling (ML interface)
 
 The ML owner's supplied interpretation of Coastal Action's **DRAFT FFH Video
 Analysis Protocol** uses 15 samples, 60 seconds apart, discarding the first and
@@ -85,10 +85,9 @@ the denominator. Missing, incomplete or inconsistent samples are errors, never
 zero detections. It returns data without writing files. MaxN remains a separate
 measure and its existing computation and CSV schema are unchanged.
 
-The app currently publishes standard MaxN analyses. Protocol persistence,
-review/recount, display/export and validator schemas require separate integration;
-the new ML interfaces do not add output files or permit modules other than the
-pipeline to write them.
+The app publishes standard MaxN or protocol analyses. Protocol persistence,
+review/recount, display/export and validation are described under Protocol app mode.
+Only the pipeline writes output files; ML interfaces return data.
 
 ### The five functions (do not change their names or inputs)
 
