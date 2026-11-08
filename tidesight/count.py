@@ -1,16 +1,3 @@
-"""
-Counting: MaxN per species.
-
-Owner: ML lead
-Branch: feat/detect
-
-MaxN = the highest number of individuals of one species visible in any single frame.
-It is the standard count for underwater video because it never counts the same fish
-twice. n_tracks (distinct tracks) is reported as a secondary number; it overcounts
-fish that leave and come back.
-
-This module is complete. Change it only if the counting rule changes.
-"""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -51,3 +38,40 @@ def compute_maxn(records: list[Record], species_list: dict[str, dict] | None = N
                             n_tracks=len(tracks_per_species[species])))
     rows.sort(key=lambda r: (-r["maxn"], r["species_id"]))
     return rows
+
+
+def sample_times(start_s: float, interval_s: float = 60.0, n_samples: int = 15) -> list[float]:
+    """Sub-sample points: start_s, start_s + interval_s, ... (n_samples of them)."""
+    return [round(start_s + i * interval_s, 3) for i in range(n_samples)]
+
+
+def compute_meancount(records: list[Record], times_s: list[float],
+                      window_s: float = 0.1) -> dict:
+    """MeanCount per species (and for all fish) over the given sub-sample times.
+
+    Returns {"samples": [{"time_s", "total", "by_species": {species: n}}...],
+             "meancount_total": float, "meancount_by_species": {species: float}}.
+    A sample with no detections counts as 0 (that is what the protocol does too).
+    Frames that triage skipped are therefore treated as empty - if triage misses fish,
+    MeanCount is biased low.
+    """
+    samples = []
+    species_seen: set[str] = set()
+    for t in times_s:
+        tracks: dict[int, str] = {}
+        for rec in records:
+            if abs(rec["time_s"] - t) <= window_s + 1e-9:
+                tracks[rec["track_id"]] = rec["species"]
+        by_species: dict[str, int] = defaultdict(int)
+        for species in tracks.values():
+            by_species[species] += 1
+        species_seen.update(by_species)
+        samples.append({"time_s": t, "total": len(tracks), "by_species": dict(by_species)})
+
+    n = len(samples) or 1
+    return {
+        "samples": samples,
+        "meancount_total": round(sum(s["total"] for s in samples) / n, 3),
+        "meancount_by_species": {sp: round(sum(s["by_species"].get(sp, 0) for s in samples) / n, 3)
+                                 for sp in sorted(species_seen)},
+    }
