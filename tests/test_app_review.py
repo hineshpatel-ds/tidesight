@@ -30,6 +30,19 @@ def review_app(tmp_path, monkeypatch):
     shutil.copyfile(video, clips / "beta.mp4")
     monkeypatch.setattr(config, "CLIPS_DIR", clips)
     monkeypatch.setattr(config, "OUTPUTS_DIR", outputs)
+    # Review/rerun tests exercise the real pipeline without weights or inference.
+    # Fresh outputs deliberately differ from the saved, partly reviewed analysis.
+    def detect_fixture(video_path, segments):
+        return [new_record(Path(video_path).stem, frame, 25, [2, 2, 25, 25], 1, 0.9)
+                for frame in (0, 5)]
+
+    def identify_fixture(video_path, records):
+        set_track_species(records, 1, "pollock", 0.71,
+                          [{"species": "pollock", "score": 0.71}])
+        return records
+
+    monkeypatch.setattr(pipeline, "run_detection", detect_fixture)
+    monkeypatch.setattr(pipeline, "identify_species", identify_fixture)
     initial = {}
     for clip_id in ("alpha", "beta"):
         records = [new_record(clip_id, frame, 25, [1, 1, 30, 30], tid, 0.8)
@@ -149,9 +162,12 @@ def test_fresh_analysis_discards_pending_confirmation(review_app, monkeypatch):
     app.checkbox[0].check()
     app.sidebar.button[0].click().run(timeout=10)
     assert not app.exception
+    assert not app.error
     assert all(not c.value for c in app.checkbox)
     assert species_widgets(app)[0].value == "pollock"
-    assert all(not r["reviewed"] for r in saved(outputs))
+    fresh = saved(outputs)
+    assert [(r["frame"], r["track_id"], r["species"], r["reviewed"])
+            for r in fresh] == [(0, 1, "pollock", False), (5, 1, "pollock", False)]
 
 
 def test_save_failure_has_no_success_and_keeps_saved_data(review_app, monkeypatch):
