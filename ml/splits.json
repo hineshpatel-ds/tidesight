@@ -1,0 +1,83 @@
+{
+  "video": {
+    "clip_id": "t1_stat2_411",
+    "file": "T1-STAT2 411.MP4",
+    "fps": "30000/1001",
+    "frames": 64354
+  },
+  "frame_rule": "ceil(t_s * fps)",
+  "bursts": {
+    "eventA_1355-1430": {
+      "t_s": [
+        835,
+        838,
+        844,
+        847,
+        850,
+        853,
+        856,
+        859,
+        862,
+        865,
+        868
+      ]
+    },
+    "eventB_2125-2240": {
+      "t_s": [
+        1285,
+        1290,
+        1295,
+        1300,
+        1305,
+        1310,
+        1315,
+        1325,
+        1330,
+        1335,
+        1340,
+        1345,
+        1350,
+        1355,
+        1360
+      ]
+    }
+  },
+  "excluded_from_training": [
+    841,
+    1320
+  ],
+  "hand_counts": {
+    "841": {
+      "count": 36,
+      "source": "'T1-STAT 2_Sept 10 _count @ 14min_enhanced.png'"
+    },
+    "1320": {
+      "count": 102,
+      "source": "'T1-STAT 2_Sept 10 _count @ 22min_enhanced.png'"
+    }
+  },
+  "folds": {
+    "foldA": {
+      "train": [
+        "eventA_1355-1430"
+      ],
+      "test_burst": "eventB_2125-2240",
+      "test_hand_count": "1320"
+    },
+    "foldB": {
+      "train": [
+        "eventB_2125-2240"
+      ],
+      "test_burst": "eventA_1355-1430",
+      "test_hand_count": "841"
+    },
+    "final": {
+      "train": [
+        "eventA_1355-1430",
+        "eventB_2125-2240"
+      ],
+      "test_burst": null,
+      "test_hand_count": null
+    }
+  }
+}

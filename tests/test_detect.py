@@ -5,146 +5,302 @@ import numpy as np
 import pytest
 
 from tidesight import config, detect
-from tidesight.contracts import Segment, detect_step, frames_to_process, validate_records, video_info
-from tidesight.count import compute_maxn, compute_meancount, sample_times
+from tidesight.contracts import Segment, validate_records
 
-
-# ---------------------------------------------------------------- fakes
-class _Tensor(list):
-    def tolist(self):
-        return list(self)
-
-    def int(self):
-        return _Tensor(int(v) for v in self)
-
-
-class _Boxes:
-    def __init__(self, xyxy, conf, ids):
-        self.xyxy, self.conf = _Tensor(xyxy), _Tensor(conf)
-        self.id = None if ids is None else _Tensor(ids)
-
-
-class _Result:
-    def __init__(self, boxes):
-        self.boxes = boxes
-
-
-class FakeYOLO:
-    """Returns one tracked fish per call, plus a box that falls outside the image."""
-
-    instances = 0
-
-    def __init__(self):
-        FakeYOLO.instances += 1
-        self.calls = 0
-
-    def predict(self, img, **kwargs):
-        self.calls += 1
-        h, w = img.shape[:2]
-        # one fish drifting right a little each frame + one box hanging outside the image
-        x = 10.4 + 3 * self.calls
-        return [_Result(_Boxes([[x, 20.6, x + 40, 60.9], [w - 5, h - 5, w + 30, h + 30]],
-                               [0.91, 0.4], None))]
-
-    def track(self, img, **kwargs):
-        self.calls += 1
-        h, w = img.shape[:2]
-        if self.calls == 1:   # ByteTrack often has no confirmed track yet on the first frame
-            return [_Result(_Boxes([], [], None))]
-        return [_Result(_Boxes([[10.4, 20.6, 50.2, 60.9], [w - 5, h - 5, w + 30, h + 30]],
-                               [0.91, 0.4], [1, 2]))]
-
-
-@pytest.fixture
-def clip(tmp_path):
-    path = tmp_path / "unit_clip.mp4"
-    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), 30, (160, 120))
-    for i in range(90):   # 3 s at 30 fps
-        writer.write(np.full((120, 160, 3), i % 255, np.uint8))
-    writer.release()
-    return path
+PROPOSED = dict(
+    DETECTOR_WEIGHTS=config.MODELS_DIR / "tidesight-fish-v1.pt", DETECT_CONF=0.18, DETECT_IMGSZ=1280,
+    DETECT_INPUT_WIDTH=320, DETECT_PREPROCESS=detect.PREPROCESS_ID,
+    TRACK_LINK_DIST=1.5, TRACK_MAX_MISSED=2, TRACK_MAX_GAP_S=1.0,
+    PROTOCOL_N_SAMPLES=15, PROTOCOL_INTERVAL_S=60.0, PROTOCOL_EDGE_S=60.0,
+)
+W, H = 160, 120
 
 
 @pytest.fixture(autouse=True)
-def fake_detector(monkeypatch):
-    FakeYOLO.instances = 0
-    monkeypatch.setattr(detect, "load_detector", lambda: FakeYOLO())
+def detector_config(monkeypatch):
+    for name, value in PROPOSED.items():
+        monkeypatch.setattr(config, name, value, raising=False)
 
 
-# ---------------------------------------------------------------- detect
-def test_records_follow_contract(clip):
-    records = detect.run_detection(clip, None)
-    info = video_info(clip)
-    assert records, "fake detector should produce records"
-    assert validate_records(records, fps=info["fps"]) == []
+def make_frame(i: int) -> np.ndarray:
+    img = np.zeros((H, W, 3), np.uint8)
+    img[..., 0], img[..., 1], img[..., 2] = i % 256, i // 256, 128
+    return img
 
 
-def test_only_wanted_original_frames(clip):
-    info = video_info(clip)
-    segs = [Segment(start_s=1.0, end_s=2.0, activity_score=1.0)]
-    wanted = set(frames_to_process(segs, info["fps"], info["frame_count"], detect_step(info["fps"])))
-    records = detect.run_detection(clip, segs)
-    assert {r["frame"] for r in records} <= wanted
-    assert min(r["frame"] for r in records) >= 30      # original numbering, not 0, 1, 2...
+def frame_index(img: np.ndarray) -> int:
+    return int(img[0, 0, 0]) + 256 * int(img[0, 0, 1])
 
 
-def test_boxes_clipped_inside_image(clip):
-    info = video_info(clip)
-    for r in detect.run_detection(clip, None):
+class FakeCapture:
+
+    def __init__(self, n_frames, refuse_seek=False, seek_offset=0, fail_grab_at=None,
+                 fail_retrieve_at=None, report_after_read=None):
+        self.n, self.pos, self.current = n_frames, 0, None
+        self.refuse_seek, self.seek_offset = refuse_seek, seek_offset
+        self.fail_grab_at, self.fail_retrieve_at = fail_grab_at, fail_retrieve_at
+        self.report_after_read = report_after_read
+
+    def isOpened(self):
+        return True
+
+    def set(self, prop, value):
+        if prop != cv2.CAP_PROP_POS_FRAMES or self.refuse_seek:
+            return False
+        self.pos = max(0, int(value) + self.seek_offset)
+        return True
+
+    def get(self, prop):
+        if prop == cv2.CAP_PROP_POS_FRAMES:
+            if self.report_after_read is not None and self.current is not None:
+                return float(self.report_after_read)
+            return float(self.pos)
+        return 0.0
+
+    def grab(self):
+        if self.pos >= self.n or self.pos == self.fail_grab_at:
+            return False
+        self.current, self.pos = self.pos, self.pos + 1
+        return True
+
+    def retrieve(self):
+        if self.current is None or self.current == self.fail_retrieve_at:
+            return False, None
+        return True, make_frame(self.current)
+
+    def read(self):
+        return (self.retrieve() if self.grab() else (False, None))
+
+    def release(self):
+        pass
+
+
+class _T(list):
+    def tolist(self):
+        return list(self)
+
+
+class _Boxes:
+    def __init__(self, xyxy, conf):
+        self.xyxy, self.conf = _T(xyxy), _T(conf)
+
+
+class _Res:
+    def __init__(self, xyxy, conf):
+        self.boxes = _Boxes(xyxy, conf)
+
+
+class FakeModel:
+
+    def __init__(self, boxes=None):
+        self.boxes = boxes
+
+    def predict(self, img, **kwargs):
+        h, w = img.shape[:2]
+        boxes = self.boxes if self.boxes is not None else [[20, 20, 60, 40], [w - 4, h - 4, w + 20, h + 20]]
+        return [_Res(boxes, [0.9] * len(boxes))]
+
+
+@pytest.fixture
+def video(monkeypatch):
+    state = {"kwargs": {}, "n": 300, "fps": 30.0, "seen": []}
+
+    def configure(n=300, fps=30.0, **kwargs):
+        state.update(n=n, fps=fps, kwargs=kwargs)
+
+    monkeypatch.setattr(detect, "video_info", lambda p: {
+        "fps": state["fps"], "frame_count": state["n"], "width": W, "height": H,
+        "duration_s": round(state["n"] / state["fps"], 3)})
+    monkeypatch.setattr(detect, "_open_capture", lambda p: FakeCapture(state["n"], **state["kwargs"]))
+    monkeypatch.setattr(detect, "load_detector", lambda: FakeModel())
+    real_prepare = detect.prepare_frame
+
+    def spy(frame):
+        state["seen"].append(frame_index(frame))
+        return real_prepare(frame)
+
+    monkeypatch.setattr(detect, "prepare_frame", spy)
+    configure.state = state
+    return configure
+
+
+def seg(a, b):
+    return [Segment(start_s=a, end_s=b, activity_score=1.0)]
+
+
+def test_records_follow_contract_and_original_resolution(video):
+    records = detect.run_detection("unit_clip.mp4", seg(0, 2))
+    assert records and validate_records(records, fps=30.0) == []
+    for r in records:
         x1, y1, x2, y2 = r["bbox"]
-        assert 0 <= x1 < x2 <= info["width"] - 1 and 0 <= y1 < y2 <= info["height"] - 1
+        assert 0 <= x1 < x2 <= W - 1 and 0 <= y1 < y2 <= H - 1
+    assert {r["bbox"][0] for r in records if r["bbox"][0] < 40} == {10}
 
 
-def test_fresh_model_per_clip(clip):
-    detect.run_detection(clip, None)
-    detect.run_detection(clip, None)
-    assert FakeYOLO.instances == 2      # tracker state cannot leak between videos
+def test_each_record_is_labelled_with_the_frame_actually_decoded(video):
+    records = detect.run_detection("unit_clip.mp4", seg(0, 9.9))
+    assert video.state["seen"] == sorted({r["frame"] for r in records})
 
 
-def test_same_fish_keeps_its_track_id(clip):
-    records = detect.run_detection(clip, None)
-    near_origin = {r["track_id"] for r in records if r["bbox"][0] < 40}
-    assert len(near_origin) == 1          # the drifting fish is linked across frames, not renumbered
+@pytest.mark.parametrize("kwargs", [dict(fail_grab_at=12), dict(fail_retrieve_at=12)])
+def test_failed_read_of_requested_frame_raises_with_frame_number(video, kwargs):
+    video(**kwargs)
+    with pytest.raises(detect.DetectionError, match="12"):
+        detect.run_detection("unit_clip.mp4", seg(0, 4))
 
 
-def test_centroid_tracker_links_and_splits():
+def test_failed_read_on_the_way_to_a_frame_raises(video):
+    video(fail_grab_at=7)
+    with pytest.raises(detect.DetectionError):
+        detect.run_detection("unit_clip.mp4", seg(0, 1))
+
+
+def test_video_shorter_than_reported_raises(video, monkeypatch):
+    monkeypatch.setattr(detect, "_open_capture", lambda p: FakeCapture(100))
+    with pytest.raises(detect.DetectionError):
+        detect.run_detection("unit_clip.mp4", seg(0, 9.9))
+
+
+def test_requested_frame_outside_video_raises(video):
+    reader = detect.FrameReader("unit_clip.mp4", 300, 30.0)
+    with pytest.raises(detect.DetectionError, match="outside"):
+        reader.read(300)
+
+
+def test_seek_refused_falls_back_to_sequential_and_labels_correctly(video):
+    video(refuse_seek=True)
+    records = detect.run_detection("unit_clip.mp4", seg(8, 9))
+    assert video.state["seen"] == sorted({r["frame"] for r in records})
+    assert min(video.state["seen"]) == 240
+
+
+@pytest.mark.parametrize("offset", [-3, 2])
+def test_inexact_seek_is_detected_and_never_mislabels(video, offset):
+    video(seek_offset=offset)
+    records = detect.run_detection("unit_clip.mp4", seg(8, 9))
+    assert video.state["seen"] == sorted({r["frame"] for r in records})
+
+
+def test_capture_reporting_wrong_position_after_read_is_not_trusted(video):
+    video(report_after_read=5)
+    records = detect.run_detection("unit_clip.mp4", seg(8, 9))
+    assert video.state["seen"] == sorted({r["frame"] for r in records})
+
+
+def test_backward_and_sparse_reads_return_exact_frames(monkeypatch):
+    monkeypatch.setattr(detect, "_open_capture", lambda p: FakeCapture(3000))
+    reader = detect.FrameReader("x", 3000, 30.0)
+    for target in (2000, 5, 1799, 1800, 0, 2999):
+        assert frame_index(reader.read(target)) == target
+
+
+def test_tracker_links_consecutive_sampled_frames():
     tr = detect.CentroidTracker()
-    a = tr.update([[0, 0, 60, 20], [500, 500, 560, 520]])
-    b = tr.update([[40, 0, 100, 20], [900, 900, 960, 920]])   # first moved 40 px (< 1.5 x 60), second jumped far
-    assert b[0] == a[0] and b[1] not in a
+    a = tr.update([[0, 0, 60, 20]], 0.0)
+    b = tr.update([[40, 0, 100, 20]], 0.2)
+    assert a == b
 
 
-def test_no_segments_no_work(clip):
-    assert detect.run_detection(clip, []) == []
+def test_tracker_does_not_link_across_unseen_gap_and_keeps_ids_unique():
+    tr = detect.CentroidTracker()
+    a = tr.update([[0, 0, 60, 20]], 0.0)
+    b = tr.update([[0, 0, 60, 20]], 10.0)
+    c = tr.update([[0, 0, 60, 20]], 10.2)
+    assert a != b and b == c and len({*a, *b}) == 2
 
 
-# ---------------------------------------------------------------- count
-def _rec(frame, track, species="fish", fps=30.0):
-    return {"clip_id": "c", "frame": frame, "time_s": round(frame / fps, 3), "bbox": [0, 0, 1, 1],
-            "track_id": track, "det_conf": 0.9, "species": species, "species_conf": 0.0,
-            "top3": [], "unknown": False, "reviewed": False}
+def test_tracker_expires_after_missed_frames():
+    tr = detect.CentroidTracker()
+    a = tr.update([[0, 0, 60, 20]], 0.0)
+    for k in range(1, 4):
+        tr.update([], 0.2 * k)
+    assert tr.update([[0, 0, 60, 20]], 0.8) != a
 
 
-def test_maxn_counts_simultaneous_fish():
-    recs = [_rec(0, 1), _rec(6, 1), _rec(6, 2), _rec(12, 3)]
-    row = compute_maxn(recs)[0]
-    assert (row["maxn"], row["frame"], row["n_tracks"]) == (2, 6, 3)
+def test_sparse_segments_get_new_ids_for_identical_positions(video):
+    records = detect.run_detection("unit_clip.mp4", seg(0, 0.1) + seg(9.0, 9.1))
+    by_frame = {}
+    for r in records:
+        by_frame.setdefault(r["frame"], set()).add(r["track_id"])
+    assert len(by_frame) == 2
+    first, second = by_frame.values()
+    assert not first & second
 
 
-def test_sample_times_match_protocol():
-    times = sample_times(60.0)
-    assert len(times) == 15 and times[0] == 60.0 and times[-1] == 900.0
+def test_each_call_starts_a_fresh_tracker(video):
+    one = detect.run_detection("unit_clip.mp4", seg(0, 0.1))
+    two = detect.run_detection("unit_clip.mp4", seg(0, 0.1))
+    assert [r["track_id"] for r in one] == [r["track_id"] for r in two]
 
 
-def test_meancount_window_and_zeros():
-    # sample at 10 s: track 1 exactly at 10 s, track 2 at 10.8 s (inside +/-1 s), track 3 at 12 s (outside)
-    recs = [_rec(300, 1), _rec(324, 2), _rec(360, 3)]
-    out = compute_meancount(recs, [10.0, 20.0], window_s=1.0)
-    assert [s["total"] for s in out["samples"]] == [2, 0]
-    assert out["meancount_total"] == 1.0
-    assert out["meancount_by_species"] == {"fish": 1.0}
+def test_settings_missing_from_config_raise_before_any_work(video, monkeypatch):
+    monkeypatch.delattr(config, "DETECT_INPUT_WIDTH")
+    with pytest.raises(detect.DetectionError, match="DETECT_INPUT_WIDTH"):
+        detect.run_detection("unit_clip.mp4", seg(0, 1))
+    assert video.state["seen"] == []
 
 
-def test_meancount_same_track_counted_once():
-    recs = [_rec(294, 1), _rec(300, 1), _rec(306, 1)]
-    assert compute_meancount(recs, [10.0])["samples"][0]["total"] == 1
+def test_settings_wrong_preprocessing_id_raises(video, monkeypatch):
+    monkeypatch.setattr(config, "DETECT_PREPROCESS", "something_else")
+    with pytest.raises(detect.DetectionError, match="preprocess|DETECT_PREPROCESS"):
+        detect.run_detection("unit_clip.mp4", seg(0, 1))
+
+
+def test_settings_reject_weights_not_trained_with_this_preprocessing(video, monkeypatch):
+    monkeypatch.setattr(config, "DETECTOR_WEIGHTS", config.MODELS_DIR / "cfd-yolov12x-1.00.pt")
+    with pytest.raises(detect.DetectionError, match="cfd-yolov12x"):
+        detect.run_detection("unit_clip.mp4", seg(0, 1))
+    assert video.state["seen"] == []
+
+
+def test_settings_confidence_and_size_come_from_config(video, monkeypatch):
+    seen = {}
+
+    class Spy(FakeModel):
+        def predict(self, img, **kw):
+            seen.update(kw, width=img.shape[1])
+            return super().predict(img, **kw)
+
+    monkeypatch.setattr(detect, "load_detector", lambda: Spy())
+    monkeypatch.setattr(config, "DETECT_CONF", 0.33)
+    monkeypatch.setattr(config, "DETECT_IMGSZ", 640)
+    detect.run_detection("unit_clip.mp4", seg(0, 0.1))
+    assert (seen["conf"], seen["imgsz"], seen["width"]) == (0.33, 640, 320)
+
+
+def test_missing_weights_fail_clearly(monkeypatch, tmp_path):
+    monkeypatch.setattr(config, "DETECTOR_WEIGHTS", tmp_path / "nope.pt")
+    pytest.importorskip("ultralytics")
+    with pytest.raises(detect.DetectionError, match="nope.pt"):
+        detect.load_detector()
+
+
+def test_no_segments_no_work(video):
+    assert detect.run_detection("unit_clip.mp4", []) == []
+    assert video.state["seen"] == []
+
+
+def test_pipeline_keeps_previous_complete_results_when_a_frame_fails(tmp_path, monkeypatch):
+    from tidesight import pipeline
+
+    clips, outputs = tmp_path / "clips", tmp_path / "outputs"
+    clips.mkdir()
+    outputs.mkdir()
+    monkeypatch.setattr(config, "CLIPS_DIR", clips)
+    monkeypatch.setattr(config, "OUTPUTS_DIR", outputs)
+    path = clips / "pipe_clip.mp4"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), 30, (W, H))
+    for i in range(60):
+        writer.write(make_frame(i))
+    writer.release()
+    monkeypatch.setattr(detect, "load_detector", lambda: FakeModel())
+
+    pipeline.run_pipeline(path, measure_energy=False)
+    published = {p.name: p.read_bytes() for p in (outputs / "pipe_clip").iterdir() if p.is_file()}
+    assert config.DETECTIONS_FILE in published
+
+    monkeypatch.setattr(detect, "_open_capture", lambda p: FakeCapture(60, fail_grab_at=12))
+    with pytest.raises(detect.DetectionError):
+        pipeline.run_pipeline(path, measure_energy=False)
+    after = {p.name: p.read_bytes() for p in (outputs / "pipe_clip").iterdir() if p.is_file()}
+    assert after == published
