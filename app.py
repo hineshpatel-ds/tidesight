@@ -43,16 +43,30 @@ if st.session_state.get("review_clip") != clip_id:
     st.session_state.pop("review_saved", None)
 
 if st.sidebar.button("Run analysis", type="primary"):
-    with st.spinner("Analysing video..."):
-        result = run_pipeline(clip_path)
-    st.session_state.review_generation += 1
     st.session_state.pop("review_saved", None)
-    st.sidebar.success(f"Done: {result['n_tracks']} tracks, {result['skipped_pct']}% of video skipped")
+    failures = dict(st.session_state.get("analysis_failures", {}))
+    try:
+        with st.spinner("Analysing video..."):
+            result = run_pipeline(clip_path)
+    except Exception as exc:
+        failures[clip_id] = str(exc)
+    else:
+        failures.pop(clip_id, None)
+        st.session_state.review_generation += 1
+        st.sidebar.success(f"Done: {result['n_tracks']} tracks, {result['skipped_pct']}% of video skipped")
+    st.session_state.analysis_failures = failures
+
+failure = st.session_state.get("analysis_failures", {}).get(clip_id)
+if failure is not None:
+    st.error(f"Analysis failed: {failure}")
 
 det_path = out_dir / config.DETECTIONS_FILE
-if not det_path.exists():
-    st.info("Click **Run analysis** to process this video.")
+if not all((out_dir / name).is_file() for name in
+           (config.SEGMENTS_FILE, config.DETECTIONS_FILE, config.MAXN_FILE)):
+    st.info("No complete results are available. Click **Run analysis** to process this video.")
     st.stop()
+if failure is not None:
+    st.warning("Showing the last complete results. The latest analysis failed.")
 
 records = read_jsonl(det_path)
 segments = read_segments(out_dir / config.SEGMENTS_FILE)
