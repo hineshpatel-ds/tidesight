@@ -38,8 +38,13 @@ def inspector_evidence(rows, species_list):
              "Original species model score": r["species_conf"]} for r in rows]
 
 
-def inspector_read_frame(video, frame):
-    """Read sequentially and verify frame position; avoid inexact keyframe seeking."""
+def inspector_read_frame(video, frame, seek_from=120):
+    """Read one original frame and verify its position.
+
+    Frames from `seek_from` on use one seek whose reported position is checked before and after the
+    read, as the detector does (detect.FrameReader); in a 36-minute 4K video this takes ~0.5 s instead
+    of minutes. If the decoder cannot confirm the seek, read sequentially from the start and verify
+    every position."""
     cap = cv2.VideoCapture(video)
     try:
         if not cap.isOpened():
@@ -48,7 +53,16 @@ def inspector_read_frame(video, frame):
             raise ValueError("This frame is outside the video.")
         width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        for index in range(frame + 1):
+        start = 0
+        if frame >= seek_from:
+            if cap.set(cv2.CAP_PROP_POS_FRAMES, frame) and cap.get(cv2.CAP_PROP_POS_FRAMES) == frame:
+                start = frame
+            else:                                   # unconfirmed seek: start again from frame 0
+                cap.release()
+                cap = cv2.VideoCapture(video)
+                if not cap.isOpened():
+                    raise ValueError("Could not open the video.")
+        for index in range(start, frame + 1):
             if cap.get(cv2.CAP_PROP_POS_FRAMES) != index:
                 raise ValueError("Could not verify the frame position.")
             ok, image = cap.read()

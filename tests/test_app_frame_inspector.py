@@ -194,3 +194,42 @@ def test_right_edge_track_number_stays_visible(inspector, monkeypatch):
     for (x, y), (width, height), baseline in placements:
         assert x >= 0 and x + width < 160
         assert y - height >= 0 and y + baseline < 100
+
+
+@pytest.fixture
+def long_video(tmp_path):
+    """200 frames; frame i shows i // 16 * 16 on the left half and i % 16 * 16 on the right half."""
+    video = tmp_path / "long.avi"
+    writer = cv2.VideoWriter(str(video), cv2.VideoWriter_fourcc(*"MJPG"), 25, (80, 60))
+    for i in range(200):
+        image = np.zeros((60, 80, 3), dtype=np.uint8)
+        image[:, :40], image[:, 40:] = i // 16 * 16, i % 16 * 16
+        writer.write(image)
+    writer.release()
+    return video
+
+
+def frame_number(image):
+    left, right = float(image[:, 5:35].mean()), float(image[:, 45:75].mean())
+    return round(left / 16) * 16 + round(right / 16)
+
+
+@pytest.mark.parametrize("frame", [119, 120, 150, 199])
+def test_far_frame_is_read_by_verified_seek(inspector, long_video, frame):
+    assert frame_number(inspector["inspector_read_frame"](str(long_video), frame)) == frame
+
+
+def test_refused_seek_falls_back_to_sequential_reading(inspector, long_video, monkeypatch):
+    real = cv2.VideoCapture
+    opened = []
+
+    class NoSeek:
+        def __init__(self, path):
+            self.cap = real(path)
+            opened.append(self)
+        def set(self, *args): return False
+        def __getattr__(self, name): return getattr(self.cap, name)
+
+    monkeypatch.setattr(cv2, "VideoCapture", NoSeek)
+    assert frame_number(inspector["inspector_read_frame"](str(long_video), 150)) == 150
+    assert len(opened) == 2                     # reopened after the refused seek
