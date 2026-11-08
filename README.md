@@ -14,7 +14,7 @@ pip install -r requirements.txt
 # Install FFmpeg first (see Synthetic sample playback below).
 python scripts\make_test_video.py                     # fake murky test clip -> data\clips\test_clip.mp4
 python -m tidesight.pipeline data\clips\test_clip.mp4  # runs triage -> detect -> species -> MaxN
-python scripts\validate_outputs.py outputs\test_clip   # checks outputs follow the contract
+python scripts\validate_outputs.py outputs\test_clip --video data\clips\test_clip.mp4 --strict
 streamlit run app.py                                  # review app at http://localhost:8501
 ```
 
@@ -57,6 +57,45 @@ analysis are synthetic; they establish no real detection or species accuracy.
 The real-encoding regression test runs when FFmpeg is on PATH or
 `TIDESIGHT_TEST_FFMPEG` points to its executable; otherwise that test is explicitly
 skipped. The other sample failure tests need no FFmpeg installation.
+
+## Validate before integration
+
+Use the actual local source video, especially when reviewing outputs copied from
+a teammate or stored in a different folder:
+
+```powershell
+python scripts\validate_outputs.py outputs\test_clip --video data\clips\test_clip.mp4 --strict
+```
+
+`--video` overrides automatic filename discovery; its filename may differ from
+the output folder name. The folder name must still match detection `clip_id`.
+Without `--video`, the validator looks for exactly one matching video stem in
+`data/clips/`. Ambiguous matches fail and require explicit selection. An invalid
+explicit source always fails; the validator never silently substitutes another.
+
+- `OK` (exit 0): complete analysis consistency checks passed with source metadata.
+- `PARTIAL` (exit 0): available checks passed, but no source was found; `SKIPPED`
+  lists the checks that could not run. This is insufficient for integration.
+- `FAIL` (exit 1): invalid/missing analysis data or required evidence. `--strict`
+  makes missing source evidence fail. Invalid command usage exits 2.
+
+Checks include required files and fields, finite scores, catalog species and
+ordered suggestions, consistent track labels, final species labels (no unfinished
+`fish`), and saved MaxN matching recomputed counts. Unreviewed labels must follow
+the unknown threshold; reviewed corrections may retain their original model
+confidence and suggestions. Empty detections and header-only MaxN are valid.
+`emissions.csv` is optional, and energy measurements are not validated here.
+
+With source evidence, checks also cover original frame bounds and timestamps,
+boxes within the original dimensions, segment duration, and detections inside
+retained segments. Segment endpoints are inclusive, as in the existing frame
+selection contract; membership uses `frame / fps`, not rounded saved timestamps.
+The validator reads files only and never repairs or rewrites them.
+
+Passing certifies data consistency, **not model accuracy**. Selecting a video
+does not prove it is the original source by content identity; verify that choice
+with the producer. Metadata checks do not decode every frame or measure recall,
+species accuracy, energy, or review-time savings.
 
 ## How it fits together
 
