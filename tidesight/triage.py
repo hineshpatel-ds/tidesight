@@ -36,6 +36,14 @@ checks (the detector still counts it there); a fish that is in more than half of
 whole clip at the same spot becomes part of the background, and is caught by motion
 only while it moves (or by spot checks); a camera bump or big light change makes the
 next stretch busy (recall first).
+
+Measured on real footage (T1-STAT2 411, 35.8 min 4K, Samkit's 25 labelled fish frames):
+62.4% skipped, but 10 of 25 fish frames (566 of 1446 fish) fell in skipped footage, and
+the MaxN of one event dropped from 165 to 45. Cause: distant schools in turbid water
+differ from their surroundings by ~4 grey levels at _WORK_WIDTH, while plain water
+already varies by 2-3; the same at 1280 px. A lower MOG2 noise floor, the LAB b channel,
+frame differencing and per-region change energy did not separate them either. So on
+murky footage motion triage is NOT safe: use it only where fish are clearly visible.
 """
 from __future__ import annotations
 
