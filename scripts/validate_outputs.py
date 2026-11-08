@@ -18,6 +18,7 @@ from tidesight import config  # noqa: E402
 from tidesight.contracts import (MAXN_FIELDS, RECORD_FIELDS, load_species_list,  # noqa: E402
                                  read_maxn_csv, validate_records, validate_segments, video_info)
 from tidesight.count import compute_maxn  # noqa: E402
+from tidesight.contracts import read_protocol_outputs
 
 
 def _number(value) -> bool:
@@ -101,6 +102,17 @@ def _record_problems(records: list, species: dict, fps: float | None) -> list[st
     if problems:
         return problems
     return validate_records(records, species, fps)
+
+
+def _protocol_problems(out_dir, records, info, clip_id):
+    problems = []
+    if any((out_dir / name).exists() for name in
+           (config.PROTOCOL_FILE, config.COUNTS_FILE, config.SAMPLE_COUNTS_FILE)):
+        try:
+            read_protocol_outputs(out_dir, records, info)
+        except (ValueError, KeyError, TypeError, OSError) as exc:
+            problems.append(f"protocol: {exc}")
+    return problems
 
 
 def _segment_problems(segments, duration: float | None) -> list[str]:
@@ -196,6 +208,7 @@ def main() -> int:
                                 _video_checks(records, segments, info))
             if counts is not None and counts != compute_maxn(records, species):
                 problems.append(f"{config.MAXN_FILE}: does not match MaxN recomputed from detections")
+    problems.extend(_protocol_problems(out_dir, records, info, clip_id))
     if problems:
         print(f"FAIL: {len(problems)} problem(s) in {out_dir}")
         for problem in problems[:30]:
