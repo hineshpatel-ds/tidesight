@@ -1,0 +1,158 @@
+{
+  "foldA": {
+    "trained_on": [
+      "eventA_1355-1430"
+    ],
+    "tested_on": "eventB_2125-2240",
+    "rows": [
+      {
+        "conf": 0.1,
+        "frames": 15,
+        "labelled": 946,
+        "predicted": 1494,
+        "total_error_pct": 57.9,
+        "mae_per_frame": 40.5,
+        "pearson_r": 0.887,
+        "precision": 0.441,
+        "recall": 0.697,
+        "hand_count_frame": "t=1320s",
+        "hand_count": 102,
+        "model_count_on_hand_frame": 98
+      },
+      {
+        "conf": 0.15,
+        "frames": 15,
+        "labelled": 946,
+        "predicted": 930,
+        "total_error_pct": -1.7,
+        "mae_per_frame": 22.8,
+        "pearson_r": 0.873,
+        "precision": 0.561,
+        "recall": 0.552,
+        "hand_count_frame": "t=1320s",
+        "hand_count": 102,
+        "model_count_on_hand_frame": 56
+      },
+      {
+        "conf": 0.18,
+        "frames": 15,
+        "labelled": 946,
+        "predicted": 730,
+        "total_error_pct": -22.8,
+        "mae_per_frame": 18.5,
+        "pearson_r": 0.872,
+        "precision": 0.618,
+        "recall": 0.477,
+        "hand_count_frame": "t=1320s",
+        "hand_count": 102,
+        "model_count_on_hand_frame": 38
+      },
+      {
+        "conf": 0.2,
+        "frames": 15,
+        "labelled": 946,
+        "predicted": 624,
+        "total_error_pct": -34.0,
+        "mae_per_frame": 22.4,
+        "pearson_r": 0.867,
+        "precision": 0.673,
+        "recall": 0.444,
+        "hand_count_frame": "t=1320s",
+        "hand_count": 102,
+        "model_count_on_hand_frame": 34
+      },
+      {
+        "conf": 0.25,
+        "frames": 15,
+        "labelled": 946,
+        "predicted": 425,
+        "total_error_pct": -55.1,
+        "mae_per_frame": 34.7,
+        "pearson_r": 0.852,
+        "precision": 0.774,
+        "recall": 0.348,
+        "hand_count_frame": "t=1320s",
+        "hand_count": 102,
+        "model_count_on_hand_frame": 23
+      }
+    ]
+  },
+  "foldB": {
+    "trained_on": [
+      "eventB_2125-2240"
+    ],
+    "tested_on": "eventA_1355-1430",
+    "rows": [
+      {
+        "conf": 0.1,
+        "frames": 11,
+        "labelled": 500,
+        "predicted": 1095,
+        "total_error_pct": 119.0,
+        "mae_per_frame": 54.1,
+        "pearson_r": 0.85,
+        "precision": 0.372,
+        "recall": 0.814,
+        "hand_count_frame": "t=841s",
+        "hand_count": 36,
+        "model_count_on_hand_frame": 83
+      },
+      {
+        "conf": 0.15,
+        "frames": 11,
+        "labelled": 500,
+        "predicted": 620,
+        "total_error_pct": 24.0,
+        "mae_per_frame": 19.8,
+        "pearson_r": 0.878,
+        "precision": 0.574,
+        "recall": 0.712,
+        "hand_count_frame": "t=841s",
+        "hand_count": 36,
+        "model_count_on_hand_frame": 43
+      },
+      {
+        "conf": 0.18,
+        "frames": 11,
+        "labelled": 500,
+        "predicted": 474,
+        "total_error_pct": -5.2,
+        "mae_per_frame": 14.0,
+        "pearson_r": 0.876,
+        "precision": 0.654,
+        "recall": 0.62,
+        "hand_count_frame": "t=841s",
+        "hand_count": 36,
+        "model_count_on_hand_frame": 31
+      },
+      {
+        "conf": 0.2,
+        "frames": 11,
+        "labelled": 500,
+        "predicted": 400,
+        "total_error_pct": -20.0,
+        "mae_per_frame": 14.5,
+        "pearson_r": 0.883,
+        "precision": 0.718,
+        "recall": 0.574,
+        "hand_count_frame": "t=841s",
+        "hand_count": 36,
+        "model_count_on_hand_frame": 24
+      },
+      {
+        "conf": 0.25,
+        "frames": 11,
+        "labelled": 500,
+        "predicted": 252,
+        "total_error_pct": -49.6,
+        "mae_per_frame": 23.3,
+        "pearson_r": 0.887,
+        "precision": 0.869,
+        "recall": 0.438,
+        "hand_count_frame": "t=841s",
+        "hand_count": 36,
+        "model_count_on_hand_frame": 19
+      }
+    ]
+  }
+}
