@@ -36,8 +36,8 @@ Every file already runs with a **placeholder**. Replace the placeholder in your 
 | --- | --- |
 | Frame numbers | 0-based, counted at the video's **original** fps. Never renumber sampled frames 0, 1, 2… |
 | Time | `time_s = round(frame / fps, 3)` |
-| Detector sampling | 5 frames per second: every `round(fps / 5)`th frame, on one global grid (`frames_to_process()` does this) |
-| Raw vs enhanced | Detector and species model read **raw** frames. `enhance()` is for the review screen and the demo (triage may use either). |
+| Detector sampling | Standard analysis uses about 5 fps on the global `frames_to_process()` grid. Protocol sampling uses exactly one nearest original frame for each requested point, as defined below. |
+| Raw vs enhanced | Detector decodes original **raw** BGR frames and may apply its configured model-specific preprocessing internally. It must not call display `enhance()`. Species crops still come from original **raw** frames. `enhance()` is for review and demo display (triage may use either). |
 | Box format | `[x1, y1, x2, y2]`, integer pixels, **original resolution**, origin top-left. `enhance()` must return the same image size. |
 | Species | One species per **track**, set with `set_track_species()`. Allowed values: a `species_id` from `data/species_list.csv`, `"unknown"`, or `"fish"` (before the species step). |
 | Unknown | `species = "unknown"` when the best score < `UNKNOWN_THRESHOLD` (0.5). `unknown` is true exactly then. |
@@ -45,6 +45,49 @@ Every file already runs with a **placeholder**. Replace the placeholder in your 
 | Writing files | Only `tidesight/pipeline.py` writes to `outputs/`. Your functions return data; they never write files. |
 | Internet | No cloud AI anywhere (no OpenAI, Gemini, Claude, Roboflow-hosted or any other hosted API). No uploading clips. Models are downloaded once, then run offline. |
 | Logging | Use `logging.getLogger(__name__)`, not `print`, inside `tidesight/`. |
+
+Detector preprocessing is versioned by `config.DETECT_PREPROCESS`. The proposed
+`stretch1-99_clahe3-8x8_v1` recipe resizes to `DETECT_INPUT_WIDTH`, stretches each
+BGR channel using its 1st/99th percentiles, then applies LAB lightness CLAHE with
+clip limit 3 and an 8-by-8 grid. The ML implementation must match its training
+recipe; training equivalence and model accuracy require separate evidence.
+Resizing is internal: return bounding boxes mapped back to original-resolution
+integer pixels, retaining original frame numbers and timestamps. Never pass
+detector-preprocessed frames to the species model or overwrite the source video.
+
+### Protocol sampling (ML interface)
+
+The ML owner's supplied interpretation of Coastal Action's **DRAFT FFH Video
+Analysis Protocol** uses 15 samples, 60 seconds apart, discarding the first and
+last 60 seconds. The original draft must be checked before claiming protocol
+compliance. Shared defaults are `PROTOCOL_N_SAMPLES`, `PROTOCOL_INTERVAL_S` and
+`PROTOCOL_EDGE_S` in `config.py`.
+
+`run_protocol_samples(video_path, start_s)` samples at `start_s + i * interval_s`
+for indices 0 through 14, independently of activity triage. Reject a start inside
+the first excluded minute or a last requested point inside the final excluded
+minute; never shorten the denominator or pad missing footage with zeros.
+Choose the nearest original frame, rounding half-frame ties upward. Requested
+times are retained as sample `time_s`; each detection retains its actual original
+frame and `round(frame / fps, 3)` timestamp. These times may differ slightly.
+
+The returned `ProtocolRun` includes source metadata, model/preprocessing settings
+and an ordered list of `ProtocolSample` objects (`index`, requested `time_s`,
+original `frame`, completion `status`, `records`). A requested frame must decode
+and finish inference before its status is `"done"`. A failed frame raises an
+error for the whole run. Tracks expire across unseen gaps over
+`TRACK_MAX_GAP_S`, with track IDs remaining unique within the clip.
+
+`compute_meancount(run)` consumes completed samples from that run. It counts
+only the records in each sample's single frame, including completed empty
+samples as zero. MeanCount total and each species mean use all 15 samples as
+the denominator. Missing, incomplete or inconsistent samples are errors, never
+zero detections. It returns data without writing files. MaxN remains a separate
+measure and its existing computation and CSV schema are unchanged.
+
+The app publishes standard MaxN or protocol analyses. Protocol persistence,
+review/recount, display/export and validation are described under Protocol app mode.
+Only the pipeline writes output files; ML interfaces return data.
 
 ### The five functions (do not change their names or inputs)
 
@@ -66,6 +109,23 @@ Every file already runs with a **placeholder**. Replace the placeholder in your 
 | `emissions.csv` | energy and CO2e from CodeCarbon |
 
 `tidesight/contracts.py` defines all of this in code. If `python scripts\validate_outputs.py outputs\<clip_id>` says **OK**, your work fits.
+
+### Protocol app mode
+
+The app also offers Samkit's merged 15-point sampling API: choose the first sample,
+then sample one original frame every 60 seconds, excluding 60 seconds at each end.
+This follows the merged implementation; the original draft has not been independently checked.
+Protocol runs bypass triage and start species as Unknown for manual track review.
+MaxN mode keeps its existing behavior.
+
+The pipeline additionally writes `protocol.json` (completed samples, detection records,
+source fps/frame count/dimensions and detector settings), `counts.json` (MeanCount
+and per-sample counts), and `sample_counts.csv` (index, requested time, original
+frame, fish count and species counts). Exactly 15 completed samples are required;
+completed empty samples count as zero, failed or missing samples invalidate the run.
+Review and recount update all these files together through staged publication.
+The app and output validator check saved counts and CSV against sample evidence.
+MeanCount is the average detections per sampled frame, not unique fish in the clip.
 
 ---
 
