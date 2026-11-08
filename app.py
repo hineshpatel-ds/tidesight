@@ -21,6 +21,81 @@ from tidesight.contracts import (ContractError, clip_id_from_path, load_species_
 from tidesight.enhance import enhance
 from tidesight.pipeline import run_pipeline, save_review
 
+
+def inspector_frames(records):
+    """Group only frames evidenced by saved detections, retaining original indices."""
+    groups = {}
+    for rec in records:
+        groups.setdefault(rec["frame"], []).append(rec)
+    return {frame: sorted(groups[frame], key=lambda r: r["track_id"])
+            for frame in sorted(groups)}
+
+
+def inspector_frame_label(frame, rows):
+    return f"Original frame {frame} — {rows[0]['time_s']:.3f} s"
+
+
+def inspector_evidence(rows, species_list):
+    labels = {sid: item["common_name"] for sid, item in species_list.items()}
+    labels.update({config.UNKNOWN_LABEL: "Unknown", config.FISH_PLACEHOLDER: "Unidentified fish"})
+    return [{"Track": r["track_id"],
+             "Saved species decision": labels.get(r["species"], "Unrecognized species"),
+             "Review status": "Reviewed" if r["reviewed"] else "Not reviewed",
+             "Detector model score": r["det_conf"],
+             "Original species model score": r["species_conf"]} for r in rows]
+
+
+def inspector_read_frame(video, frame):
+    """Decode from the beginning; fail closed if original position cannot be verified.
+
+    Deliberately avoid keyframe seeking and caching: a replaced source must be
+    read afresh. Position is checked before and after every sequential decode.
+    """
+    cap = cv2.VideoCapture(video)
+    try:
+        if not cap.isOpened():
+            raise ValueError("The source video could not be opened.")
+        if not 0 <= frame < cap.get(cv2.CAP_PROP_FRAME_COUNT):
+            raise ValueError("The saved original frame is outside the source video.")
+        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        for index in range(frame + 1):
+            if cap.get(cv2.CAP_PROP_POS_FRAMES) != index:
+                raise ValueError("The decoder cannot verify the requested original frame position.")
+            ok, image = cap.read()
+            if not ok or image is None:
+                raise ValueError("The source video could not decode the requested original frame.")
+            if cap.get(cv2.CAP_PROP_POS_FRAMES) != index + 1:
+                raise ValueError("The decoder cannot verify the requested original frame position.")
+        if image.shape != (height, width, 3):
+            raise ValueError("Decoded frame dimensions do not match the source video.")
+        return image
+    finally:
+        cap.release()
+
+
+def inspector_overlay(raw, rows, enhanced):
+    """Draw saved original-resolution boxes after display enhancement, without mutation."""
+    image = enhance(raw.copy()) if enhanced else raw.copy()
+    if image is None or image.shape != raw.shape:
+        raise ValueError("Enhanced frame dimensions changed. Choose Raw to inspect aligned boxes.")
+    height, width = raw.shape[:2]
+    for rec in rows:
+        x1, y1, x2, y2 = rec["bbox"]
+        if not (0 <= x1 < x2 <= width and 0 <= y1 < y2 <= height):
+            raise ValueError("A saved box is outside the source dimensions; aligned display is unavailable.")
+        # x2/y2 are exclusive crop bounds in the existing review workflow.
+        cv2.rectangle(image, (x1, y1), (x2 - 1, y2 - 1), (0, 255, 0), 1)
+        label = f"Track {rec['track_id']}"
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        (text_width, text_height), baseline = cv2.getTextSize(label, font, .5, 3)
+        origin = (max(1, min(x1, width - text_width - 2)),
+                  max(text_height + 1, min(y1 - 5, height - baseline - 2)))
+        cv2.putText(image, label, origin, font, .5, (0, 0, 0), 3)
+        cv2.putText(image, label, origin, font, .5, (0, 255, 0), 1)
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+
 st.set_page_config(page_title="TideSight", layout="wide")
 st.title("TideSight")
 st.caption("Offline fish detection, identification and counting. No data leaves this computer.")
@@ -110,6 +185,34 @@ with right:
             last = rows[-1]
             st.metric("Energy used by last analysis (Wh)", f"{float(last['energy_consumed']) * 1000:.3f}")
             st.metric("Emissions (g CO2e)", f"{float(last['emissions']) * 1000:.3f}")
+
+# ------------------------------------------------------------------ frame inspector
+st.subheader("Frame inspector")
+st.caption("Inspect saved detections in their original frame. This control is independent of video playback. "
+           "Only frames with saved detections are listed; analyzed frames with zero detections are not logged. "
+           "Sequential decoding verifies frame position and may take longer for later frames.")
+frame_groups = inspector_frames(records)
+if not frame_groups:
+    st.info("No saved detections. A completed analysis can validly return an empty result; "
+            "this does not prove no fish were present. No saved detection frames are available to inspect.")
+else:
+    selected_frame = st.selectbox("Saved frame", list(frame_groups),
+                                  format_func=lambda f: inspector_frame_label(f, frame_groups[f]),
+                                  key=f"inspector_frame_{clip_id}")
+    display = st.radio("Frame display", ["Raw", "Enhanced"], horizontal=True,
+                       key=f"inspector_display_{clip_id}")
+    selected_rows = frame_groups[selected_frame]
+    try:
+        raw = inspector_read_frame(str(clip_path), selected_frame)
+        annotated = inspector_overlay(raw, selected_rows, display == "Enhanced")
+    except (ValueError, cv2.error, OSError) as exc:
+        st.warning(f"Frame image unavailable: {exc} Saved evidence remains available below.")
+    else:
+        st.image(annotated, caption=inspector_frame_label(selected_frame, selected_rows), width="stretch")
+    st.caption("Saved species decisions and review status are shown below. Scores are original model scores, "
+               "not calibrated probabilities or confidence in a human correction. "
+               "Use Review each fish below to confirm or correct a track.")
+    st.dataframe(inspector_evidence(selected_rows, species_list), width="stretch", hide_index=True)
 
 # ------------------------------------------------------------------ review
 st.subheader("Review each fish")
