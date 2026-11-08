@@ -5,8 +5,8 @@ import pytest
 
 from tidesight import config
 from tidesight.contracts import frames_to_process, validate_segments, video_info
-from tidesight.triage import (_SPOT_CHECK_EVERY_S, _SPOT_CHECK_LEN_S, drop_blips, run_triage,
-                              segments_from_activity, spot_check_times)
+from tidesight.triage import (_SPOT_CHECK_EVERY_S, _SPOT_CHECK_LEN_S, codec_block_px, drop_blips, run_triage,
+                              segments_from_activity, speck_size, spot_check_times)
 
 STEP = 0.2  # 5 samples per second
 
@@ -168,6 +168,40 @@ def test_fish_in_the_first_half_second_is_kept(tmp_path):
     clip = write_clip(tmp_path / "early.mp4", fish_from_s=0.2, fish_to_s=0.6)
     segs = with_motion(run_triage(clip))
     assert segs and segs[0]["start_s"] <= 0.2 and segs[0]["end_s"] >= 0.6
+
+
+def write_faint_clip(path, fish_from_s=4.0, fish_to_s=6.0, seconds=10, contrast=4):
+    """1280x720 (shrunk 2x by triage, like real footage), flat murky water with per-frame sensor noise
+    and a fish only `contrast` grey levels darker than the water: like the distant schools in the
+    Coastal Action clip T1-STAT2 411 (~4 levels), which the old MOG2 triage could not see.
+    Checked: the MOG2 version found nothing here at contrast 3-6; it needed 8."""
+    w, h = 1280, 720
+    rng = np.random.default_rng(5)
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (w, h))
+    for i in range(FPS * seconds):
+        t = i / FPS
+        frame = np.full((h, w, 3), (70, 95, 60), np.float32) + rng.normal(0, 3, (h, w, 1))
+        if fish_from_s <= t <= fish_to_s:
+            cx = int((t - fish_from_s) / (fish_to_s - fish_from_s) * w)
+            body = np.zeros((h, w), np.uint8)
+            cv2.ellipse(body, (cx, 300), (60, 22), 0, 0, 360, 1, -1)
+            frame[body > 0] -= contrast
+        writer.write(np.clip(frame, 0, 255).astype(np.uint8))
+    writer.release()
+    return path
+
+
+def test_faint_fish_in_murky_water_is_kept(tmp_path):
+    clip = write_faint_clip(tmp_path / "faint.mp4")
+    segs = with_motion(run_triage(clip))
+    assert segs and any(s["start_s"] <= 4.2 and s["end_s"] >= 5.8 for s in segs)
+    assert all(s["start_s"] >= 2.0 for s in segs)                 # noise alone does not count as motion
+
+
+def test_speck_size_follows_the_video_compression_grid():
+    assert speck_size(1.0) == 9          # a 640 px clip is not shrunk: 8 px codec blocks stay 8 px
+    assert speck_size(1 / 6) == 5        # 4K shrunk to 640: blocks are ~1 px, the fish-scale minimum applies
+    assert codec_block_px(1 / 2) == 4.0
 
 
 def test_fish_that_never_moves_is_still_shown_to_the_detector(tmp_path):
