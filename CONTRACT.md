@@ -111,6 +111,23 @@ pipeline to write them.
 
 `tidesight/contracts.py` defines all of this in code. If `python scripts\validate_outputs.py outputs\<clip_id>` says **OK**, your work fits.
 
+### Protocol app mode
+
+The app also offers Samkit's merged 15-point sampling API: choose the first sample,
+then sample one original frame every 60 seconds, excluding 60 seconds at each end.
+This follows the merged implementation; the original draft has not been independently checked.
+Protocol runs bypass triage and start species as Unknown for manual track review.
+MaxN mode keeps its existing behavior.
+
+The pipeline additionally writes `protocol.json` (completed samples, detection records,
+source fps/frame count/dimensions and detector settings), `counts.json` (MeanCount
+and per-sample counts), and `sample_counts.csv` (index, requested time, original
+frame, fish count and species counts). Exactly 15 completed samples are required;
+completed empty samples count as zero, failed or missing samples invalidate the run.
+Review and recount update all these files together through staged publication.
+The app and output validator check saved counts and CSV against sample evidence.
+MeanCount is the average detections per sampled frame, not unique fish in the clip.
+
 ---
 
 ## 4. Daily rhythm

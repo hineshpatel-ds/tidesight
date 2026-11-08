@@ -10,6 +10,7 @@ import streamlit as st
 from tidesight import config
 from tidesight.contracts import (ContractError, clip_id_from_path, load_species_list, read_jsonl,
                                  read_maxn_csv, read_segments, set_track_species)
+from tidesight.contracts import read_protocol_outputs, video_info
 from tidesight.enhance import enhance
 from tidesight.pipeline import run_pipeline, save_review
 
@@ -99,6 +100,12 @@ if not clips:
 clip_path: Path = st.sidebar.selectbox("Video", clips, format_func=lambda p: p.name)
 clip_id = clip_id_from_path(clip_path)
 out_dir = config.OUTPUTS_DIR / clip_id
+mode = st.sidebar.selectbox("Counting method", ["MaxN", "Protocol (15 samples)"])
+protocol_start = None
+if mode != "MaxN":
+    protocol_start = st.sidebar.number_input("First sample (seconds)", min_value=60.0, value=60.0)
+    st.sidebar.caption("15 original frames, 60 seconds apart; first and last 60 seconds excluded. "
+                       "Species starts as Unknown for manual review.")
 
 # Reset unsaved form choices when the clip or analysis changes.
 if st.session_state.get("review_clip") != clip_id:
@@ -111,7 +118,8 @@ if st.sidebar.button("Run analysis", type="primary"):
     failures = dict(st.session_state.get("analysis_failures", {}))
     try:
         with st.spinner("Analysing video..."):
-            result = run_pipeline(clip_path)
+            result = (run_pipeline(clip_path) if protocol_start is None else
+                      run_pipeline(clip_path, protocol_start_s=protocol_start))
     except Exception as exc:
         failures[clip_id] = str(exc)
     else:
@@ -134,9 +142,25 @@ if failure is not None:
 
 records = read_jsonl(det_path)
 segments = read_segments(out_dir / config.SEGMENTS_FILE)
-# TODO(Samkit): confirm the MeanN formula and sampling rules before replacing MaxN.
 maxn = read_maxn_csv(out_dir / config.MAXN_FILE)
 species_list = load_species_list()
+protocol = None
+st.caption("Species identification in this build is a placeholder. Confirm species manually; "
+           "protocol runs start as Unknown.")
+if any((out_dir / name).exists() for name in
+       (config.PROTOCOL_FILE, config.COUNTS_FILE, config.SAMPLE_COUNTS_FILE)):
+    try:
+        protocol, counts = read_protocol_outputs(out_dir, records, video_info(clip_path))
+    except (ValueError, KeyError, TypeError, OSError) as exc:
+        st.error(f"Protocol results unavailable: {exc}")
+        st.stop()
+    st.subheader("Protocol counts")
+    st.metric("Mean fish per sampled frame", counts["meancount_fish"])
+    st.caption("15 completed samples. Species assignments need human review. "
+               "A zero means no fish detected in that sampled frame.")
+    st.dataframe(counts["samples"], hide_index=True)
+    st.download_button("Download sample counts CSV", (out_dir / config.SAMPLE_COUNTS_FILE).read_bytes(),
+                       file_name=f"{clip_id}_sample_counts.csv", mime="text/csv")
 
 
 @st.cache_data(show_spinner=False)
@@ -183,14 +207,25 @@ st.subheader("Frame inspector")
 st.caption("Choose a saved frame to view its detections.")
 with st.expander("About the frame inspector"):
     st.write("The frame selector works separately from the video player. Only frames with saved "
-             "detections are listed. Later frames may take longer to load because the video is "
+             "detections are listed for MaxN; protocol results include all 15 samples. Later frames may take longer to load because the video is "
              "read from the beginning to check the frame position.")
 frame_groups = inspector_frames(records)
+if protocol is not None:
+    frame_groups = {sample["frame"]: sample["records"] for sample in protocol["samples"]}
+
+
+def saved_frame_label(frame):
+    if protocol is not None:
+        sample = next(sample for sample in protocol["samples"] if sample["frame"] == frame)
+        return f"Sample {sample['index'] + 1}: frame {frame} ({sample['time_s']:.3f} s)"
+    return inspector_frame_label(frame, frame_groups[frame])
+
+
 if not frame_groups:
     st.info("No saved detections to inspect. Fish may still be present in the video.")
 else:
     selected_frame = st.selectbox("Saved frame", list(frame_groups),
-                                  format_func=lambda f: inspector_frame_label(f, frame_groups[f]),
+                                  format_func=saved_frame_label,
                                   key=f"inspector_frame_{clip_id}")
     display = st.radio("Frame display", ["Raw", "Enhanced"], horizontal=True,
                        key=f"inspector_display_{clip_id}")
@@ -201,7 +236,7 @@ else:
     except (ValueError, cv2.error, OSError) as exc:
         st.warning(f"Frame unavailable: {exc} Detection details are shown below.")
     else:
-        st.image(annotated, caption=inspector_frame_label(selected_frame, selected_rows), width="stretch")
+        st.image(annotated, caption=saved_frame_label(selected_frame), width="stretch")
     st.caption("Model scores are not calibrated probabilities. Review species below.")
     st.dataframe(inspector_evidence(selected_rows, species_list), width="stretch", hide_index=True,
                  column_config={"Saved species decision": "Species", "Review status": "Review",
@@ -211,7 +246,7 @@ else:
 # Review
 st.subheader("Review each fish")
 if st.session_state.pop("review_saved", None) == clip_id:
-    st.success("Saved. MaxN recalculated.")
+    st.success("Saved. Counts recalculated.")
 st.caption("Check the tracks you want to save. Original model scores do not measure confidence "
            "in a human correction.")
 options = list(species_list) + [config.UNKNOWN_LABEL]

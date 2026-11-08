@@ -68,6 +68,70 @@ MAXN_FIELDS = ["clip_id", "species_id", "common_name", "maxn", "frame", "time_s"
 
 
 # ======================================================================= small helpers
+def read_protocol_outputs(out_dir: Path, records: list, info: dict | None = None) -> tuple[dict, dict]:
+    from tidesight.count import compute_meancount
+
+    run = json.loads((out_dir / config.PROTOCOL_FILE).read_text(encoding="utf-8"))
+    validate_protocol(run, records, info)
+    if run["clip_id"] != out_dir.name:
+        raise ContractError("Protocol clip differs from output folder")
+    counts = compute_meancount(run)
+    if json.loads((out_dir / config.COUNTS_FILE).read_text(encoding="utf-8")) != counts:
+        raise ContractError("Saved MeanCount differs from completed samples")
+    with (out_dir / config.SAMPLE_COUNTS_FILE).open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    expected = [{key: (json.dumps(value, sort_keys=True) if key == "by_species" else str(value))
+                 for key, value in row.items()} for row in counts["samples"]]
+    if rows != expected:
+        raise ContractError("Sample CSV differs from completed samples")
+    return run, counts
+
+
+def validate_protocol(run: dict, records: list, info: dict | None = None) -> None:
+    from tidesight.count import protocol_sample_frames, compute_meancount
+
+    if not isinstance(run, dict) or run.get("status") != "complete" or run.get("n_samples") != 15:
+        raise ContractError("Protocol requires exactly 15 completed samples")
+    source = run["source"]
+    if not isinstance(source, dict) or not isinstance(run["samples"], list):
+        raise ContractError("Invalid protocol source or samples")
+    if any(type(source[key]) not in (int, float) or not math.isfinite(source[key])
+           or source[key] <= 0 for key in ("fps", "frame_count", "width", "height")):
+        raise ContractError("Protocol source dimensions and fps must be positive finite numbers")
+    if type(source["frame_count"]) is not int:
+        raise ContractError("Protocol source frame count must be an integer")
+    if info is not None and any(source[key] != info[key] for key in
+                                ("fps", "frame_count", "width", "height")):
+        raise ContractError("Protocol source metadata differs from video")
+    if run["fps"] != source["fps"] or run["frame_count"] != source["frame_count"]:
+        raise ContractError("Protocol source metadata is inconsistent")
+    if run["interval_s"] != 60:
+        raise ContractError("Protocol interval must be 60 seconds")
+    expected = protocol_sample_frames(run["start_s"], source["fps"], source["frame_count"],
+                                      n_samples=15, interval_s=60, edge_s=60)
+    samples = run["samples"]
+    if any(not isinstance(sample, dict) for sample in samples):
+        raise ContractError("Invalid protocol sample")
+    if len(samples) != 15 or len({sample["frame"] for sample in samples}) != 15:
+        raise ContractError("Protocol samples are missing or duplicated")
+    for sample, point in zip(samples, expected):
+        if type(sample["frame"]) is not int or type(sample["index"]) is not int:
+            raise ContractError("Protocol frame and sample index must be integers")
+        if any(sample[key] != point[key] for key in ("index", "time_s", "frame")):
+            raise ContractError("Protocol sample schedule differs from original frames")
+    flattened = [record for sample in samples for record in sample["records"]]
+    if flattened != records or any(record["clip_id"] != run["clip_id"] for record in records):
+        raise ContractError("Protocol detections differ from saved samples")
+    errors = validate_records(records, load_species_list(), source["fps"])
+    for record in records:
+        left, top, right, bottom = record["bbox"]
+        if not 0 <= left < right <= source["width"] or not 0 <= top < bottom <= source["height"]:
+            errors.append("Protocol box outside source bounds")
+    if errors:
+        raise ContractError(str(errors))
+    compute_meancount(run)
+
+
 def clip_id_from_path(video_path: str | Path) -> str:
     """'Cape LaHave 2024-07-12.MP4' -> 'cape_lahave_2024_07_12'."""
     clip_id = re.sub(r"[^a-z0-9]+", "_", Path(video_path).stem.lower()).strip("_")
