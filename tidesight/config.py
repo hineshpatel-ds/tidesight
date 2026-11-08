@@ -30,10 +30,18 @@ TRIAGE_MERGE_GAP_S = 2.0    # merge two busy segments if the gap between them is
 
 # ---------------------------------------------------------------- detection (ML lead)
 DETECT_FPS = 5              # frames per second the detector looks at
-DETECT_CONF = 0.25          # minimum detector confidence (low on purpose: recall first)
-DETECT_IMGSZ = 1024         # Community Fish Detector expects 1024
-DETECTOR_WEIGHTS = MODELS_DIR / "cfd-yolov12x-1.00.pt"
-TRACKER = "bytetrack.yaml"
+DETECTOR_WEIGHTS = MODELS_DIR / "tidesight-fish-v1.pt"
+DETECT_CONF = 0.18
+DETECT_IMGSZ = 1280
+DETECT_INPUT_WIDTH = 1920
+DETECT_PREPROCESS = "stretch1-99_clahe3-8x8_v1"
+TRACK_LINK_DIST = 1.5
+TRACK_MAX_MISSED = 2
+TRACK_MAX_GAP_S = 1.0
+# Protocol sampling defaults; app persistence/display is not integrated yet.
+PROTOCOL_N_SAMPLES = 15
+PROTOCOL_INTERVAL_S = 60.0
+PROTOCOL_EDGE_S = 60.0      # discard this duration at both ends of the source video
 
 # ---------------------------------------------------------------- species (Species ID)
 SPECIES_MODEL = "hf-hub:imageomics/bioclip"
