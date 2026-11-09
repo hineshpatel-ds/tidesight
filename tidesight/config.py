@@ -56,3 +56,4 @@ UNKNOWN_LABEL = "unknown"   # species value when the model is not confident
 
 # ---------------------------------------------------------------- energy
 ENERGY_COUNTRY = "CAN"      # CodeCarbon offline mode needs a country code
+ENERGY_REGION = "nova scotia"
