@@ -47,7 +47,7 @@ def _start_energy_tracker(out_dir: Path):
     tracker = None
     try:
         from codecarbon import OfflineEmissionsTracker
-        tracker = OfflineEmissionsTracker(country_iso_code=config.ENERGY_COUNTRY,
+        tracker = OfflineEmissionsTracker(country_iso_code=config.ENERGY_COUNTRY, region=config.ENERGY_REGION,
                                           output_dir=str(out_dir), output_file=config.ENERGY_FILE,
                                           log_level="error", save_to_file=True)
         tracker.start()

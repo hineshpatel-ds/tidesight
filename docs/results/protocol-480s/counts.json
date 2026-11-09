@@ -1,0 +1,127 @@
+{
+  "clip_id": "t1_stat2_411",
+  "n_samples": 15,
+  "start_s": 480.0,
+  "interval_s": 60.0,
+  "meancount_fish": 7.0,
+  "meancount_by_species": {
+    "unknown": 7.0
+  },
+  "samples": [
+    {
+      "index": 0,
+      "time_s": 480.0,
+      "frame": 14386,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 1,
+      "time_s": 540.0,
+      "frame": 16184,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 2,
+      "time_s": 600.0,
+      "frame": 17982,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 3,
+      "time_s": 660.0,
+      "frame": 19780,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 4,
+      "time_s": 720.0,
+      "frame": 21578,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 5,
+      "time_s": 780.0,
+      "frame": 23377,
+      "fish": 2,
+      "by_species": {
+        "unknown": 2
+      }
+    },
+    {
+      "index": 6,
+      "time_s": 840.0,
+      "frame": 25175,
+      "fish": 18,
+      "by_species": {
+        "unknown": 18
+      }
+    },
+    {
+      "index": 7,
+      "time_s": 900.0,
+      "frame": 26973,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 8,
+      "time_s": 960.0,
+      "frame": 28771,
+      "fish": 1,
+      "by_species": {
+        "unknown": 1
+      }
+    },
+    {
+      "index": 9,
+      "time_s": 1020.0,
+      "frame": 30569,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 10,
+      "time_s": 1080.0,
+      "frame": 32368,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 11,
+      "time_s": 1140.0,
+      "frame": 34166,
+      "fish": 1,
+      "by_species": {
+        "unknown": 1
+      }
+    },
+    {
+      "index": 12,
+      "time_s": 1200.0,
+      "frame": 35964,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 13,
+      "time_s": 1260.0,
+      "frame": 37762,
+      "fish": 0,
+      "by_species": {}
+    },
+    {
+      "index": 14,
+      "time_s": 1320.0,
+      "frame": 39560,
+      "fish": 83,
+      "by_species": {
+        "unknown": 83
+      }
+    }
+  ]
+}

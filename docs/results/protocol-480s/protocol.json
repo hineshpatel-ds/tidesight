@@ -1,0 +1,2021 @@
+{
+  "clip_id": "t1_stat2_411",
+  "fps": 29.97002997002997,
+  "frame_count": 64354,
+  "start_s": 480.0,
+  "interval_s": 60.0,
+  "n_samples": 15,
+  "model": "tidesight-fish-v1.pt",
+  "preprocess": "stretch1-99_clahe3-8x8_v1",
+  "conf": 0.18,
+  "samples": [
+    {
+      "index": 0,
+      "time_s": 480.0,
+      "frame": 14386,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 1,
+      "time_s": 540.0,
+      "frame": 16184,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 2,
+      "time_s": 600.0,
+      "frame": 17982,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 3,
+      "time_s": 660.0,
+      "frame": 19780,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 4,
+      "time_s": 720.0,
+      "frame": 21578,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 5,
+      "time_s": 780.0,
+      "frame": 23377,
+      "status": "done",
+      "records": [
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 23377,
+          "time_s": 780.013,
+          "bbox": [
+            433,
+            881,
+            579,
+            949
+          ],
+          "track_id": 1,
+          "det_conf": 0.276,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 23377,
+          "time_s": 780.013,
+          "bbox": [
+            324,
+            1057,
+            443,
+            1113
+          ],
+          "track_id": 2,
+          "det_conf": 0.234,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "time_s": 840.0,
+      "frame": 25175,
+      "status": "done",
+      "records": [
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            212,
+            769,
+            340,
+            827
+          ],
+          "track_id": 3,
+          "det_conf": 0.407,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            403,
+            659,
+            527,
+            712
+          ],
+          "track_id": 4,
+          "det_conf": 0.386,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            489,
+            753,
+            595,
+            803
+          ],
+          "track_id": 5,
+          "det_conf": 0.377,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            383,
+            803,
+            506,
+            859
+          ],
+          "track_id": 6,
+          "det_conf": 0.362,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            180,
+            848,
+            295,
+            900
+          ],
+          "track_id": 7,
+          "det_conf": 0.354,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            1358,
+            629,
+            1464,
+            679
+          ],
+          "track_id": 8,
+          "det_conf": 0.346,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            4,
+            569,
+            108,
+            620
+          ],
+          "track_id": 9,
+          "det_conf": 0.338,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            765,
+            558,
+            885,
+            613
+          ],
+          "track_id": 10,
+          "det_conf": 0.33,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            689,
+            733,
+            808,
+            787
+          ],
+          "track_id": 11,
+          "det_conf": 0.314,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            52,
+            837,
+            182,
+            899
+          ],
+          "track_id": 12,
+          "det_conf": 0.313,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            270,
+            571,
+            399,
+            626
+          ],
+          "track_id": 13,
+          "det_conf": 0.28,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            395,
+            663,
+            519,
+            724
+          ],
+          "track_id": 14,
+          "det_conf": 0.239,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            466,
+            581,
+            588,
+            637
+          ],
+          "track_id": 15,
+          "det_conf": 0.224,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            281,
+            513,
+            393,
+            565
+          ],
+          "track_id": 16,
+          "det_conf": 0.208,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            2,
+            1198,
+            93,
+            1246
+          ],
+          "track_id": 17,
+          "det_conf": 0.203,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            203,
+            728,
+            332,
+            781
+          ],
+          "track_id": 18,
+          "det_conf": 0.202,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            492,
+            757,
+            609,
+            810
+          ],
+          "track_id": 19,
+          "det_conf": 0.2,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 25175,
+          "time_s": 840.006,
+          "bbox": [
+            198,
+            756,
+            334,
+            818
+          ],
+          "track_id": 20,
+          "det_conf": 0.184,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "time_s": 900.0,
+      "frame": 26973,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 8,
+      "time_s": 960.0,
+      "frame": 28771,
+      "status": "done",
+      "records": [
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 28771,
+          "time_s": 959.992,
+          "bbox": [
+            3310,
+            681,
+            3410,
+            729
+          ],
+          "track_id": 21,
+          "det_conf": 0.363,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "time_s": 1020.0,
+      "frame": 30569,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 10,
+      "time_s": 1080.0,
+      "frame": 32368,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 11,
+      "time_s": 1140.0,
+      "frame": 34166,
+      "status": "done",
+      "records": [
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 34166,
+          "time_s": 1140.006,
+          "bbox": [
+            3419,
+            654,
+            3530,
+            706
+          ],
+          "track_id": 22,
+          "det_conf": 0.23,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "time_s": 1200.0,
+      "frame": 35964,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 13,
+      "time_s": 1260.0,
+      "frame": 37762,
+      "status": "done",
+      "records": []
+    },
+    {
+      "index": 14,
+      "time_s": 1320.0,
+      "frame": 39560,
+      "status": "done",
+      "records": [
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1043,
+            469,
+            1139,
+            513
+          ],
+          "track_id": 23,
+          "det_conf": 0.45,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            87,
+            724,
+            213,
+            782
+          ],
+          "track_id": 24,
+          "det_conf": 0.445,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1419,
+            506,
+            1520,
+            553
+          ],
+          "track_id": 25,
+          "det_conf": 0.426,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            920,
+            496,
+            1024,
+            542
+          ],
+          "track_id": 26,
+          "det_conf": 0.424,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            325,
+            804,
+            441,
+            854
+          ],
+          "track_id": 27,
+          "det_conf": 0.423,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            285,
+            557,
+            405,
+            612
+          ],
+          "track_id": 28,
+          "det_conf": 0.411,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            215,
+            762,
+            345,
+            821
+          ],
+          "track_id": 29,
+          "det_conf": 0.408,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            562,
+            694,
+            663,
+            740
+          ],
+          "track_id": 30,
+          "det_conf": 0.407,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            523,
+            627,
+            621,
+            672
+          ],
+          "track_id": 31,
+          "det_conf": 0.404,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            646,
+            606,
+            762,
+            658
+          ],
+          "track_id": 32,
+          "det_conf": 0.399,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1036,
+            523,
+            1132,
+            565
+          ],
+          "track_id": 33,
+          "det_conf": 0.397,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            92,
+            658,
+            206,
+            707
+          ],
+          "track_id": 34,
+          "det_conf": 0.384,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            730,
+            537,
+            823,
+            580
+          ],
+          "track_id": 35,
+          "det_conf": 0.383,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            698,
+            801,
+            813,
+            853
+          ],
+          "track_id": 36,
+          "det_conf": 0.382,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1003,
+            410,
+            1106,
+            453
+          ],
+          "track_id": 37,
+          "det_conf": 0.381,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            25,
+            551,
+            145,
+            606
+          ],
+          "track_id": 38,
+          "det_conf": 0.372,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            231,
+            881,
+            355,
+            938
+          ],
+          "track_id": 39,
+          "det_conf": 0.372,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            440,
+            859,
+            553,
+            911
+          ],
+          "track_id": 40,
+          "det_conf": 0.368,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            622,
+            851,
+            725,
+            899
+          ],
+          "track_id": 41,
+          "det_conf": 0.365,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            413,
+            747,
+            511,
+            791
+          ],
+          "track_id": 42,
+          "det_conf": 0.36,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            927,
+            567,
+            1028,
+            612
+          ],
+          "track_id": 43,
+          "det_conf": 0.355,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            728,
+            629,
+            852,
+            683
+          ],
+          "track_id": 44,
+          "det_conf": 0.353,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3532,
+            672,
+            3651,
+            726
+          ],
+          "track_id": 45,
+          "det_conf": 0.352,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            943,
+            659,
+            1051,
+            710
+          ],
+          "track_id": 46,
+          "det_conf": 0.352,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            822,
+            962,
+            936,
+            1014
+          ],
+          "track_id": 47,
+          "det_conf": 0.349,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            352,
+            883,
+            461,
+            931
+          ],
+          "track_id": 48,
+          "det_conf": 0.342,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1361,
+            687,
+            1461,
+            732
+          ],
+          "track_id": 49,
+          "det_conf": 0.337,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            900,
+            804,
+            1007,
+            852
+          ],
+          "track_id": 50,
+          "det_conf": 0.328,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            492,
+            773,
+            600,
+            825
+          ],
+          "track_id": 51,
+          "det_conf": 0.327,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3674,
+            978,
+            3764,
+            1021
+          ],
+          "track_id": 52,
+          "det_conf": 0.324,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1012,
+            403,
+            1117,
+            449
+          ],
+          "track_id": 53,
+          "det_conf": 0.318,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            2830,
+            732,
+            2944,
+            784
+          ],
+          "track_id": 54,
+          "det_conf": 0.313,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1027,
+            528,
+            1126,
+            571
+          ],
+          "track_id": 55,
+          "det_conf": 0.313,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            75,
+            660,
+            193,
+            712
+          ],
+          "track_id": 56,
+          "det_conf": 0.307,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3204,
+            867,
+            3322,
+            922
+          ],
+          "track_id": 57,
+          "det_conf": 0.303,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1466,
+            430,
+            1564,
+            474
+          ],
+          "track_id": 58,
+          "det_conf": 0.302,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1202,
+            821,
+            1300,
+            869
+          ],
+          "track_id": 59,
+          "det_conf": 0.299,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            968,
+            365,
+            1069,
+            410
+          ],
+          "track_id": 60,
+          "det_conf": 0.295,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            212,
+            636,
+            313,
+            683
+          ],
+          "track_id": 61,
+          "det_conf": 0.294,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            999,
+            565,
+            1093,
+            607
+          ],
+          "track_id": 62,
+          "det_conf": 0.292,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1162,
+            586,
+            1255,
+            628
+          ],
+          "track_id": 63,
+          "det_conf": 0.292,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            276,
+            630,
+            390,
+            683
+          ],
+          "track_id": 64,
+          "det_conf": 0.289,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            2420,
+            375,
+            2536,
+            425
+          ],
+          "track_id": 65,
+          "det_conf": 0.288,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            216,
+            887,
+            353,
+            950
+          ],
+          "track_id": 66,
+          "det_conf": 0.279,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            872,
+            682,
+            973,
+            729
+          ],
+          "track_id": 67,
+          "det_conf": 0.278,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            349,
+            493,
+            456,
+            540
+          ],
+          "track_id": 68,
+          "det_conf": 0.277,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1184,
+            686,
+            1297,
+            734
+          ],
+          "track_id": 69,
+          "det_conf": 0.277,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            271,
+            623,
+            388,
+            674
+          ],
+          "track_id": 70,
+          "det_conf": 0.274,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1147,
+            538,
+            1243,
+            583
+          ],
+          "track_id": 71,
+          "det_conf": 0.271,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            946,
+            650,
+            1061,
+            700
+          ],
+          "track_id": 72,
+          "det_conf": 0.267,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3449,
+            844,
+            3556,
+            897
+          ],
+          "track_id": 73,
+          "det_conf": 0.263,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            698,
+            809,
+            810,
+            864
+          ],
+          "track_id": 74,
+          "det_conf": 0.262,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3397,
+            1048,
+            3511,
+            1100
+          ],
+          "track_id": 75,
+          "det_conf": 0.261,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1613,
+            689,
+            1727,
+            740
+          ],
+          "track_id": 76,
+          "det_conf": 0.254,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1434,
+            714,
+            1536,
+            759
+          ],
+          "track_id": 77,
+          "det_conf": 0.243,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            342,
+            886,
+            460,
+            942
+          ],
+          "track_id": 78,
+          "det_conf": 0.233,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1169,
+            747,
+            1260,
+            786
+          ],
+          "track_id": 79,
+          "det_conf": 0.23,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            270,
+            550,
+            401,
+            606
+          ],
+          "track_id": 80,
+          "det_conf": 0.229,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            203,
+            770,
+            331,
+            828
+          ],
+          "track_id": 81,
+          "det_conf": 0.228,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1008,
+            547,
+            1108,
+            596
+          ],
+          "track_id": 82,
+          "det_conf": 0.226,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            2926,
+            420,
+            3020,
+            464
+          ],
+          "track_id": 83,
+          "det_conf": 0.223,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            730,
+            653,
+            855,
+            709
+          ],
+          "track_id": 84,
+          "det_conf": 0.223,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1327,
+            432,
+            1435,
+            480
+          ],
+          "track_id": 85,
+          "det_conf": 0.222,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3197,
+            863,
+            3307,
+            914
+          ],
+          "track_id": 86,
+          "det_conf": 0.221,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            100,
+            716,
+            226,
+            771
+          ],
+          "track_id": 87,
+          "det_conf": 0.218,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            966,
+            739,
+            1071,
+            788
+          ],
+          "track_id": 88,
+          "det_conf": 0.216,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            722,
+            642,
+            850,
+            702
+          ],
+          "track_id": 89,
+          "det_conf": 0.214,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            947,
+            741,
+            1065,
+            793
+          ],
+          "track_id": 90,
+          "det_conf": 0.207,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            419,
+            645,
+            522,
+            693
+          ],
+          "track_id": 91,
+          "det_conf": 0.206,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1520,
+            468,
+            1618,
+            513
+          ],
+          "track_id": 92,
+          "det_conf": 0.205,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            115,
+            654,
+            219,
+            703
+          ],
+          "track_id": 93,
+          "det_conf": 0.2,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            407,
+            688,
+            498,
+            728
+          ],
+          "track_id": 94,
+          "det_conf": 0.199,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1444,
+            367,
+            1545,
+            415
+          ],
+          "track_id": 95,
+          "det_conf": 0.195,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            257,
+            618,
+            374,
+            670
+          ],
+          "track_id": 96,
+          "det_conf": 0.19,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1431,
+            502,
+            1533,
+            549
+          ],
+          "track_id": 97,
+          "det_conf": 0.189,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3486,
+            690,
+            3613,
+            747
+          ],
+          "track_id": 98,
+          "det_conf": 0.188,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            1029,
+            897,
+            1136,
+            946
+          ],
+          "track_id": 99,
+          "det_conf": 0.186,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            2982,
+            693,
+            3087,
+            739
+          ],
+          "track_id": 100,
+          "det_conf": 0.185,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            736,
+            622,
+            860,
+            675
+          ],
+          "track_id": 101,
+          "det_conf": 0.184,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            361,
+            485,
+            466,
+            535
+          ],
+          "track_id": 102,
+          "det_conf": 0.182,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            3481,
+            701,
+            3589,
+            752
+          ],
+          "track_id": 103,
+          "det_conf": 0.181,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            984,
+            406,
+            1095,
+            453
+          ],
+          "track_id": 104,
+          "det_conf": 0.181,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        },
+        {
+          "clip_id": "t1_stat2_411",
+          "frame": 39560,
+          "time_s": 1319.985,
+          "bbox": [
+            666,
+            600,
+            778,
+            650
+          ],
+          "track_id": 105,
+          "det_conf": 0.181,
+          "species": "unknown",
+          "species_conf": 0.0,
+          "top3": [],
+          "unknown": true,
+          "reviewed": false
+        }
+      ]
+    }
+  ],
+  "status": "complete",
+  "source": {
+    "fps": 29.97002997002997,
+    "frame_count": 64354,
+    "width": 3840,
+    "height": 2160,
+    "duration_s": 2147.278
+  }
+}
